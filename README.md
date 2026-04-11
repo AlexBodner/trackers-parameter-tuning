@@ -69,32 +69,9 @@ Install the above (and any missing imports you encounter) into your environment 
 
 ### Running evaluation
 
-- **SoccerNet-Tracking CLI example**
-
-  From the repository root:
-
-  ```bash
-  python soccernet/eval_soccernet.py \
-    --tracker ocsort \
-    --split train \
-    --dataset-dir soccernet/datasets/tracking \
-    --results-dir soccernet/results/soccernet
-  ```
-
-  - `--tracker`: one of `ocsort`, `sort`, `bytetrack`.
-  - `--split`: `train` or `test`, depending on which split is prepared under `datasets/tracking`.
-  - The script will:
-    - Run the chosen tracker over all sequences in the split.
-    - Save tracker outputs under `<results-dir>/<tracker>/tracker_output/`.
-    - Evaluate against the corresponding GT directory using HOTA, CLEAR, and Identity metrics.
-    - Print a table with key columns (`HOTA`, `MOTA`, `IDF1`, `IDSW`) and write full metrics to JSON.
-
-- **Notebooks**
-
   For each dataset directory (`mot17`, `dancetrack`, `sportsmot`, `soccernet`), open the `trackers_*_param_tuning.ipynb` notebooks in Jupyter or VS Code to:
 
   - Run trackers with different hyperparameter settings.
-  - Visualize and compare metric curves.
   - Export best-performing configurations and tracker outputs in MOTChallenge format.
 
 ### Notes
