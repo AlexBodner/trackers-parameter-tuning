@@ -67,6 +67,41 @@ Install the above (and any missing imports you encounter) into your environment 
   - Place each dataset under a directory layout that matches what the corresponding notebooks expect (MOTChallenge-style sequences with `gt/gt.txt`, `det/det.txt`, `seqinfo.ini`).
   - Use the `trackers_*_dancetrack_param_tuning.ipynb` and `trackers_*_sportsmot_param_tuning.ipynb` notebooks to run trackers and export MOTChallenge-format results.
 
+### Makefile benchmark workflow
+
+From the repository root, the [`Makefile`](Makefile) drives tuning, evaluation, test-set tracking, and Codabench upload for **MOT17**, **SportsMOT**, and **DanceTrack** test submissions:
+
+```bash
+make setup
+make tune eval TRACKER=sort DATASET=mot17
+make submit upload-codabench TRACKER=sort DATASET=mot17 \
+  CODABENCH_TOKEN=your_api_token
+
+make submit upload-codabench TRACKER=sort DATASET=sportsmot \
+  CODABENCH_TOKEN=your_api_token \
+  CODABENCH_DESCRIPTION="Name: ... Team: ... Email: ..."
+
+make submit upload-codabench TRACKER=sort DATASET=dancetrack \
+  CODABENCH_TOKEN=your_api_token
+```
+
+| Dataset | Codabench competition | Test phase |
+|---|---|---|
+| MOT17 | [10049](https://www.codabench.org/competitions/10049/) | 16382 |
+| SportsMOT | [13077](https://www.codabench.org/competitions/13077/) | 21402 |
+| DanceTrack | [14885](https://www.codabench.org/competitions/14885/) | 24635 |
+
+Submit uses `scripts/submit_yolox.py` on raw YOLOX detections with each tracker's library defaults (or `best_params.json` / `PARAMS=`). Eval uses the trackers CLI with explicit `--tracker.*` flags from `scripts/tracker_flags.py` so shared CLI defaults do not bleed across trackers.
+
+Create an API token via [Codabench API docs](https://www.codabench.org/api/docs/) (`POST /api/api-token-auth/`). You must be registered and approved for each competition before upload succeeds (`GET /api/can_make_submission/<phase_id>/`).
+
+`upload-codabench` waits for Codabench scoring and prints **HOTA / IDF1 / MOTA** when finished. Poll an existing submission without re-uploading:
+
+```bash
+CODABENCH_TOKEN=your_api_token python scripts/codabench_submit.py \
+  --submission-id 746151 --wait
+```
+
 ### Running evaluation
 
   For each dataset directory (`mot17`, `dancetrack`, `sportsmot`, `soccernet`), open the `trackers_*_param_tuning.ipynb` notebooks in Jupyter or VS Code to:
